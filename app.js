@@ -11,6 +11,8 @@ app.get('/' , (req, res) => {
 })
 
 app.get('/users', (req, res) => {
+
+
     res.status(200).json({
         status: 'success',
         data: {
@@ -21,6 +23,10 @@ app.get('/users', (req, res) => {
 
 app.get('/test' , (req, res) => {
     res.send('This is the test api....')
+})
+
+app.get('*', (req, res) => {
+    res.send(`Dude...You've entered the invalid path....`)
 })
 
 app.listen(port, () => {
