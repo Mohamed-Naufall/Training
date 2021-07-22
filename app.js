@@ -5,7 +5,6 @@ const port = process.env.PORT || 3000;
 
 const users = fs.readFileSync('./users.json')
 const usersData = JSON.parse(users);
-const failure = `You've entered the invalid path....`
 
 app.get('/' , (req, res) => {
     res.send('Welcome to the Backend World....')
@@ -28,9 +27,9 @@ app.get('/test' , (req, res) => {
 
 app.get('*', (req, res) => {
     res.status(404).json({
-        status: 'fail', 
+        status: 'failure', 
         data: {
-            failure
+            message: `You've entered the invalid path....`
         }     
     })
 })
