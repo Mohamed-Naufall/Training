@@ -5,7 +5,10 @@ app.use(express.json());
 
 const port = process.env.PORT || 3000;
 
-const users = fs.readFileSync('./tours.json')
+const tours = fs.readFileSync('./tours.json')
+const toursData = JSON.parse(tours);
+
+const users = fs.readFileSync('./users.json')
 const usersData = JSON.parse(users);
 
 app.get('/' , (req, res) => {
@@ -13,6 +16,15 @@ app.get('/' , (req, res) => {
 })
 
 app.get('/tours', (req, res) => {
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            toursData
+        }
+    });
+})
+app.get('/users', (req, res) => {
 
     res.status(200).json({
         status: 'success',
@@ -31,7 +43,7 @@ app.get('/api',(req, res) => {
     res.status(200).json({
         status: 'success',
         data: {
-            usersData
+            toursData
         }
     });
 })
@@ -39,7 +51,7 @@ app.get('/api',(req, res) => {
 
 app.get('/api/:id',(req, res) => {
     id = req.params.id * 2;
-    const tour = usersData.find(el => el.id === id)
+    const tour = toursData.find(el => el.id === id)
     if (id > tour.length) {
         return res.status(404).json({
             status: 'fail',
@@ -64,11 +76,6 @@ app.get('*', (req, res) => {
     })
 })
 
-
-
-app.get('/api/:id', () => {
-    console.log(req.params.id);
-})
 
 app.listen(port, () => {
     console.log(`Server is listening to the port ${port}....`);
