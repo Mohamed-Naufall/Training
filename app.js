@@ -7,7 +7,7 @@ app.get('/' , (req, res) => {
 })
 
 app.get('/test' , (req, res) => {
-    res.send('Welcome to the Backend World....')
+    res.send('This is the test api....')
 })
 
 app.listen(port, () => {
