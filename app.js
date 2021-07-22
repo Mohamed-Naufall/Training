@@ -11,7 +11,7 @@ app.get('/' , (req, res) => {
 })
 
 app.get('/users', (req, res) => {
-    res.send(users);
+    res.send(usersData);
 })
 
 app.get('/test' , (req, res) => {
