@@ -1,13 +1,13 @@
 const express = require('express');
 const app = express();
-const port = 8086;
+const port = process.env.PORT || 3000;
 
 app.get('/' , (req, res) => {
     res.send('Welcome to the Backend World....')
 })
 
 app.get('/test' , (req, res) => {
-    res.send('Testing')
+    res.send('Welcome to the Backend World....')
 })
 
 app.listen(port, () => {
