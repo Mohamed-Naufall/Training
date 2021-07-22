@@ -11,7 +11,12 @@ app.get('/' , (req, res) => {
 })
 
 app.get('/users', (req, res) => {
-    res.send(usersData);
+    res.status(200).json({
+        status: 'success',
+        data: {
+            usersData
+        }
+    });
 })
 
 app.get('/test' , (req, res) => {
