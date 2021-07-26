@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const app = express();
 const firebase = require('firebase');
-const { nextTick } = require('process');
+
 
 
 var firebase_config = firebase.initializeApp({
@@ -15,10 +15,9 @@ var firebase_config = firebase.initializeApp({
     appId: "1:797522824346:web:b8c90c61543c814372a323"
 })
 
-// const firebaseStoreData = require('./firebase/setDataFirebase')
-// const firebase1 = require('./firebaseConnect')
-app.use(express.json());
+var database = firebase.database();
 
+app.use(express.json());
 
 const port = process.env.PORT || 3000;
 
@@ -53,35 +52,55 @@ app.get('/userss', (req, res) => {
     })
 })
 
-app.get('/' , (req, res) => {
-    res.send('Welcome to the Backend World....')
-})
-
-app.get('/tours', (req, res) => {
-
-    res.status(200).json({
-        status: 'success',
+app.get('/getbyID/:id',  (req,res) => {
+    try{    
+        let id = req.params.id
+        var firebaseRef = firebase.database().ref(`users/${id}`);
+        firebaseRef.once('value', function(snapshot){
+        let items = snapshot.val();     
+        res.status(200).json({
+            staus: 'success',
+            data: {
+                items
+            }
+        })
+    })
+} catch{
+    res.status(404).json({
+        status: 'failure',
         data: {
-            toursData
+            message: 'There is no data'
         }
-    });
+    })
+}
+
 })
 
-
-
-
-app.get('/test' , (req, res) => {
-    res.send('This is the test api....')
-})
-
-app.get('/api',(req, res) => {
-
-    res.status(200).json({
-        status: 'success',
+app.get('/getbyArray/:id',  (req,res) => {
+    try{      
+        let id = req.params.id
+        var firebaseRef = database.ref('users');
+        firebaseRef.once('value', function(snapshot){
+        let items = snapshot.val();
+        arrayItem = items.map(element => {
+            return element
+        });
+        res.status(200).json({
+            staus: 'success',
+            data: {
+                 array: arrayItem[id]
+            }
+        })
+    })
+} catch{
+    res.status(404).json({
+        status: 'failure',
         data: {
-            toursData
+            message: 'There is no data'
         }
-    });
+    })
+}
+
 })
 
 app.get('/api/:id',(req, res) => {
@@ -103,7 +122,6 @@ app.get('/api/:id',(req, res) => {
 })
  
 app.post('/postdata', async (req,res) => {
-    let database = firebase.database();
     const customer_data = (req.body); 
     let data = await database.ref('/users').push(customer_data);
     res.status(200).json({
@@ -114,7 +132,6 @@ app.post('/postdata', async (req,res) => {
 })
 //CAUTION - THIS WILL DELETE THE ENTIRE COLLECTION OF USERS.
 app.delete('/deletedata', async (req, res) => {
-    let database = firebase.database();
     deletedData = await database.ref('users').remove();
     console.log(deletedData);
     res.status(200).json({
@@ -124,7 +141,6 @@ app.delete('/deletedata', async (req, res) => {
 })
 
 app.delete('/deleteSingleData/:id', async (req, res) => {
-    let database = firebase.database();
     let id = req.params.id 
     console.log(id)
     let output = await database.ref(`users/` ).once('value');
@@ -136,15 +152,54 @@ app.delete('/deleteSingleData/:id', async (req, res) => {
 })
 
 app.put('/update/:id', async (req, res) => {
-    let database = firebase.database();
     let id = req.params.id 
-    console.log(id)
+
     let output = await database.ref(`users/${id}/`).update({nutrients:req.body.nutrients});
     res.status(200).json({
         status: 'success',
         output
     })
 })
+
+
+app.delete('/deleteUsingId/:id', async (req, res) => {
+    try {
+    let id = req.params.id;
+    await database.ref(`users/${id}`).remove()
+    res.status(204).json({
+        status: 'success',
+        data: {
+            message: 'User deleted successfully',
+        }
+    })
+
+    } catch {
+        res.status(404).json({
+            status: 'failure',
+            data:{
+                message: 'Invalid Input'
+            }
+        })
+    }
+})
+app.delete('/deleteId', async (req, res) => {
+    let id = req.query.id;
+    let output = await database.ref('/users').once('value');
+    let db_id = output.val().filter((item) => {
+         let array_id = item._id
+         return id !== array_id
+    });
+    console.log(db_id);
+    let newData = await database.ref('/users').set(db_id);
+    res.status(200).json({
+        status: 'success',
+        data: {
+            newData
+        }
+    })
+})
+
+//set use pannanum...
 
 app.get('*', (req, res) => {
     res.status(404).json({
