@@ -2,7 +2,9 @@ const express = require('express');
 const fs = require('fs');
 const app = express();
 const firebase = require('firebase');
+const axios = require('axios');
 
+//npm axios searchanise (third party)
 
 
 var firebase_config = firebase.initializeApp({
@@ -75,6 +77,20 @@ app.get('/getbyID/:id',  (req,res) => {
 }
 
 })
+
+const searchaniseKey = 'https://www.searchanise.com/getwidgets?apiKey=0E2E8p9Z7X'
+console.log(searchaniseKey);
+
+
+app.get('/searchanniseData', (req, res) => {
+    var axiosData = axios.get('https://www.searchanise.com/getwidgets?apiKey=0E2E8p9Z7X')
+        .then(output => res.send(output.data))
+        .catch(err => console.log(err))
+})
+
+// axios.get('https://www.searchanise.com/getwidgets?apiKey=0E2E8p9Z7X')
+//     .then(res=>console.log(res.data))
+//     .catch(err => console.log(err));
 
 app.get('/getbyArray/:id',  (req,res) => {
     try{      
@@ -160,8 +176,6 @@ app.put('/update/:id', async (req, res) => {
         output
     })
 })
-
-
 app.delete('/deleteUsingId/:id', async (req, res) => {
     try {
     let id = req.params.id;
@@ -182,6 +196,7 @@ app.delete('/deleteUsingId/:id', async (req, res) => {
         })
     }
 })
+
 app.delete('/deleteId', async (req, res) => {
     let id = req.query.id;
     let output = await database.ref('/users').once('value');
